@@ -1,0 +1,19 @@
+<div *ngIf="availableRooms.length == 0">
+    <p style="color:red">
+        There are no available rooms... Create one!
+    </p>
+</div>
+<div *ngIf="availableRooms.length > 0">
+    <p>
+    Available Rooms :
+    </p>
+    <div *ngFor="let roomName of availableRooms" style="margin-top:20px">
+        <button mat-raised-button (click)="joinRoom(roomName)">{{roomName}}</button>
+    </div>
+</div>
+<div style="margin-top: 20px;">
+    <button mat-raised-button class="mat-primary" (click)="createRoom()">Create New Room</button>
+</div>
+<div style="margin-top: 20px;">
+    <button mat-raised-button (click)="goBack()">Back</button>
+</div>

@@ -1,0 +1,11 @@
+<p>
+  Should they go ?
+</p>    
+
+<mat-radio-group [(ngModel)]="selectedOption">
+    <mat-radio-button *ngFor="let option of options" [value]="option">
+        {{option}}
+    </mat-radio-button>
+</mat-radio-group>
+
+<button mat-button class="mat-primary" (click)="onNoClick()">Vote</button>

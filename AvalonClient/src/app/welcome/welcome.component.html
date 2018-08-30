@@ -1,0 +1,12 @@
+<form #nameForm="ngForm" >
+<p>
+    Enter your name:
+</p>
+<mat-form-field>
+    <input required name="nameInput" [(ngModel)]="userName" matInput placeholder="Nickname" value="Sushi" > 
+</mat-form-field>
+<div>
+  <button [disabled]="!nameForm.form.valid" mat-raised-button class="mat-primary" (click)="goToRoomSelection()">Enter Game</button>
+</div>
+
+</form>

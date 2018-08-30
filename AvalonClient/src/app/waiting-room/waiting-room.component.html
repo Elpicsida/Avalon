@@ -1,0 +1,45 @@
+<p>
+  Waiting Room: {{this.roomName}} ({{availablePlayers}}/{{maxLimit}})
+</p>
+<mat-table [dataSource]="players" class="mat-elevation-z8" style="width:400px; margin:auto">
+    
+  <!--- Note that these columns can be defined in any order.
+        The actual rendered columns are set as a property on the row definition" -->
+
+  <!-- Position Column -->
+  <ng-container matColumnDef="id">
+    <mat-header-cell *matHeaderCellDef> No. </mat-header-cell>
+    <mat-cell *matCellDef="let element; let i = index;">{{i+1}}</mat-cell>
+  </ng-container>
+
+  <!-- Name Column -->
+  <ng-container matColumnDef="name">
+    <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+    <mat-cell *matCellDef="let player"> {{player.Name}} </mat-cell>
+  </ng-container>
+
+  <!-- Ready -->
+  <ng-container matColumnDef="ready">
+      <mat-header-cell *matHeaderCellDef> Is Ready? </mat-header-cell>
+      <mat-cell *matCellDef="let player"> 
+        <mat-checkbox [(ngModel)]="player.Ready" disabled="disabled">
+      </mat-checkbox> 
+    </mat-cell>
+    </ng-container>
+
+  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+</mat-table>
+
+<div>
+  <p>Ready ?</p> 
+  <mat-checkbox [(ngModel)]="ready" (change)="readyClicked($event)"></mat-checkbox>
+</div>
+
+<div style="margin-top: 20px;">
+  <button mat-raised-button (click)="requestStartGame()" [disabled]="!isStartActive()">Start Game</button>
+</div>
+
+<div style="margin-top: 20px;">
+  <button mat-raised-button (click)="goBack()" >Back</button>
+</div>

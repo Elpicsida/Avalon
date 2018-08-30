@@ -1,0 +1,120 @@
+<form name="myForm" #nameForm="ngForm">
+<p>
+  Room Setup
+</p>    
+<mat-accordion>
+    <mat-expansion-panel expanded style="margin:auto">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    General
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <mat-card>
+                <mat-card-content>
+                    <div>
+                        <mat-form-field>
+                            <input name="inputName" required [(ngModel)]="room.name" matInput placeholder="RoomName" value="Your Room"> 
+                        </mat-form-field>
+                    </div>
+                    <div>
+                        <p>Number of Normal Good</p><mat-slider  name="sliderGood" min="0" max="5" #goodNumber [(ngModel)] = "room.NumberOfGood" (ngModelChange) ="onNgModelChange($event)"></mat-slider> {{goodNumber.value}}
+                    </div>
+                    <div>
+                        <p>Number of Normal Evil</p><mat-slider  name="sliderEvil" min="0" max="3" #evilNumber [(ngModel)] = "room.NumberOfEvil" (ngModelChange) ="onNgModelChange($event)"></mat-slider> {{evilNumber.value}}
+                    </div>
+                </mat-card-content>
+            </mat-card>     
+        </mat-expansion-panel>
+    <mat-expansion-panel style="margin:auto">
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                Special Characters
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <mat-card>
+            <mat-card-content>
+                <mat-selection-list name="charSelectionList" [(ngModel)]="room.SpecialCharacters" (ngModelChange)="onNgModelChange($event)">
+                    <mat-list-option *ngFor="let specialCharacter of specialCharacters" [value]="specialCharacter">
+                    {{ specialCharacter.Name }} - {{ specialCharacter.Description}}
+                    </mat-list-option>
+                    </mat-selection-list>
+            </mat-card-content>
+        </mat-card>     
+    </mat-expansion-panel>
+    <mat-expansion-panel style="margin:auto">
+        <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Campaign
+                </mat-panel-title>
+        </mat-expansion-panel-header>
+        <mat-card>
+            <mat-card-content>
+            <p>Campaign</p>
+            <p> Total number Of players : {{ this.room.Campaign.NumberOfPlayers}}</p>
+            <p> Total number of Mordred's minions : {{ this.room.Campaign.RecommendedMordredMinions}}</p>
+            
+            
+            <mat-table [dataSource]="this.room.Campaign.Missions" class="mat-elevation-z8" style="width:400px; margin:auto">
+                
+              <!-- Position Column -->
+              <ng-container matColumnDef="id">
+                <mat-header-cell *matHeaderCellDef>Mission Number</mat-header-cell>
+                <mat-cell *matCellDef="let element; let i = index;">{{i+1}}</mat-cell>
+              </ng-container>
+            
+              <!-- Name Column -->
+              <ng-container matColumnDef="companions">
+                <mat-header-cell *matHeaderCellDef>Companions</mat-header-cell>
+                <mat-cell *matCellDef="let mission"> 
+                    <div>
+                        <button mat-button style="width:40px;height:40px" (click)="decreaseCompanions(mission)">-</button>
+                            {{mission.NumberOfCompanions}}
+                        <button mat-button style="width:40px;height:40px" (click)="increaseCompanions(mission)">+</button>
+                    </div>
+                </mat-cell>
+              </ng-container>
+            
+              <!-- Name Column -->
+              <ng-container matColumnDef="failures">
+                <mat-header-cell *matHeaderCellDef>Fails</mat-header-cell>
+                <mat-cell *matCellDef="let mission">
+                    <div>
+                        <button mat-button (click)="decreaseFailures(mission)">-</button>
+                            {{mission.NumberOfFailsToFailMission}}
+                        <button mat-button (click)="increaseFailures(mission)">+</button>
+                    </div>
+                </mat-cell>
+              </ng-container>
+            
+              <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+              <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+            </mat-table>
+        </mat-card-content>
+    </mat-card>
+    </mat-expansion-panel>
+    <mat-expansion-panel style="margin:auto">
+        <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Add-ons
+                </mat-panel-title>
+        </mat-expansion-panel-header>
+    <mat-card>
+        <div>
+            <mat-checkbox name="excaliburCheckbox" [(ngModel)]="room.ExcaliburEnabled">
+                Excalibur Enabled
+            </mat-checkbox>
+        </div>
+        <div>
+            <mat-checkbox name="ladyOfTheLakeCheckbox" [(ngModel)]="room.LadyOfTheLakeEnabled">
+                Lady Of The Lake Enabled
+            </mat-checkbox>
+        </div>
+    </mat-card>
+    </mat-expansion-panel>
+</mat-accordion>
+  <p>Total number of players : {{numberOfPlayers}}</p>
+<div>
+    <button mat-raised-button (click)="goBack()">Back</button>
+    <button [disabled]="!nameForm.form.valid" mat-raised-button class="mat-primary" (click)="createRoom()">Create New Room</button>
+</div>
+</form>

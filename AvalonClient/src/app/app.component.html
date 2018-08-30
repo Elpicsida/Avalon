@@ -1,0 +1,15 @@
+<div *ngIf="isUserNameChosen()" style="text-align:center">
+  <p>Your nickname : {{getUserName()}}</p>
+</div>
+<!--The content below is only a placeholder and can be replaced.-->
+<div style="text-align:center">
+  <router-outlet></router-outlet>
+</div>
+  <!-- <button (click)="sendMessage()">Button 1</button>
+  <button (click)="goFirst()">Navigate to first page</button>
+  <button mat-raised-button (click)="goSecond()">Navigate to second page</button>
+  <mat-form-field>
+    <input [(ngModel)]="roomName" matInput placeholder="Nickname" value="Sushi"> 
+</mat-form-field>
+<button (click)="createRoom()">Create New Room</button>
+  <button (click)="getRooms()">Get Rooms</button> -->
