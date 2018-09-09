@@ -1,0 +1,8 @@
+.imageCharacter {
+    margin: auto;
+}
+
+.mat-card-content {
+    display: flex;
+    flex-direction: column;
+}

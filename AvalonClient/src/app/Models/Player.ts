@@ -5,7 +5,8 @@ export class Player {
     IsLeader: boolean = false;
     IsGoingOnAMission: boolean = false;
     hasVoted: boolean = false;
-    voteValue? : boolean = null;
+    voteValue?: boolean = null;
+    hasSelectedMissionResult: boolean = false;
     constructor(name: string = '', ready: boolean = false) {
         this.Name = name;
         this.Ready = ready;

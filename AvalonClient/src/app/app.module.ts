@@ -17,6 +17,9 @@ import {MatDialogModule} from '@angular/material/dialog';
 import { SafePipe } from './pipes/SafePipe';
 import { MissionVoteDialog } from './mission-vote-dialog/mission-vote-dialog.component';
 import { CompanionVoteDialog } from './companion-vote.dialog/companion-vote-dialog.component';
+import { ViewCharacterDialog } from './view-character-dialog/view-character-dialog.component';
+import { ViewMissionsDialog } from './view-missions-dialog/view-missions-dialog.component';
+import { EndingComponent } from './ending/ending.component';
 
 
 const routes: Routes = [
@@ -24,7 +27,8 @@ const routes: Routes = [
   { path: 'selectRoom', component: SelectRoomComponent},
   { path: 'createRoom', component: CreateRoomComponent},
   { path: 'waitingRoom', component: WaitingRoomComponent},
-  { path: 'gameRoom', component : GameRoomComponent}
+  { path: 'gameRoom', component : GameRoomComponent},
+  { path: 'ending', component: EndingComponent}
 ];
 
 @NgModule({
@@ -33,15 +37,20 @@ const routes: Routes = [
     WelcomeComponent,
     SelectRoomComponent,
     CreateRoomComponent,
+    EndingComponent,
     WaitingRoomComponent,
     GameRoomComponent,
     MissionVoteDialog,
     CompanionVoteDialog,
+    ViewCharacterDialog,
+    ViewMissionsDialog,
     SafePipe
   ],
   entryComponents: [
     MissionVoteDialog,
-    CompanionVoteDialog
+    CompanionVoteDialog,
+    ViewCharacterDialog,
+    ViewMissionsDialog
   ],
   imports: [
     BrowserModule,

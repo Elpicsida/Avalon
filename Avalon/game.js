@@ -40,24 +40,44 @@ var Game = (function() {
                 case 0 : //Normal Evil :
                 {
                     let friends = otherSockets.filter(x => [0,2,3,4,5,6].indexOf(x.Character.Type) > -1).map(x => x.userName);
-                    sockets[i].Character.AdditionalInfo = "You are common evil. You're friends are " + friends.join();
+                    let msg = '';
+                    if (friends && friends.length) {
+                        msg = "Your friends are " + friends.join();
+                    } else {
+                        msg = "You are alone";
+                    }
+                    sockets[i].Character.AdditionalInfo = "You are common evil. " + msg;
                     break;
                 }
                 case 1: //Normal Good :
                 {
-                    sockets[i].Character.AdditionalInfo = "Unfortunatelly , you know nothing Jon Snow :(";
+                    sockets[i].Character.AdditionalInfo = "You don't know your allies";
                     break;
                 }
                 case 2: //Mordred :
                 {
                     let friends = otherSockets.filter(x => x.Character.Type === 0).map(x => x.userName);
-                    sockets[i].Character.AdditionalInfo = "You are unknown to Merlin. You're friends are " + friends.join();
+                    let msg = '';
+                    if (friends && friends.length) {
+                        msg = "Your friends are " + friends.join();
+                    } else {
+                        msg = "You are alone";
+                    }
+                    sockets[i].Character.AdditionalInfo = "You are unknown to Merlin. " + msg;
                     break;
                 }
                 case 3: // Assassin
                 {
                     let friends = otherSockets.filter(x => x.Character.Type === 0).map(x => x.userName);
-                    sockets[i].Character.AdditionalInfo = "You have to kill Merlin at the end of the game. You're friends are " + friends.join();
+
+                    let msg = '';
+                    if (friends && friends.length) {
+                        msg = "Your friends are " + friends.join();
+                    } else {
+                        msg = "You are alone";
+                    }
+
+                    sockets[i].Character.AdditionalInfo = "You have to kill Merlin at the end of the game. " + msg;
                     break;
                 }
                 case 4: { // LancelotEvil

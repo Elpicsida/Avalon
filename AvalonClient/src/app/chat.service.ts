@@ -71,6 +71,14 @@ export class ChatService {
     this.messages.next(socketMessage);
   }
 
+  leaveRoom() {
+    delete this.wsService.roomName;
+    const socketMessage = new SocketMessage();
+    socketMessage.MessageType = MessageType.LEAVE_ROOM;
+    socketMessage.Content = this.wsService.userName;
+    this.messages.next(socketMessage);
+  }
+
   sendPlayerUpdate(isReady: boolean) {
     const player = new Player();
     const socketMessage = new SocketMessage();
@@ -149,4 +157,17 @@ export class ChatService {
     socketMessage.Content = { roomName: roomName };
     this.messages.next(socketMessage);
   } 
+
+  sendRequestForNewCharacters() { 
+    const socketMessage = new SocketMessage();
+    socketMessage.MessageType = MessageType.REQUEST_NEW_CHARACTERS;
+    this.messages.next(socketMessage);
+  }
+
+  getDataForEnding() {
+    const socketMessage = new SocketMessage();
+    socketMessage.MessageType = MessageType.GET_DATA_FOR_ENDING;
+    socketMessage.Content = {};
+    this.messages.next(socketMessage);
+  }
 }

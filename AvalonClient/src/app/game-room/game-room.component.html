@@ -54,49 +54,20 @@
 <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
 </mat-table>
 
-<mat-table [dataSource]="missions" class="mat-elevation-z8" style="width:400px; margin:auto">
-  <ng-container matColumnDef="id">
-    <mat-header-cell *matHeaderCellDef> No. </mat-header-cell>
-    <mat-cell *matCellDef="let mission">{{mission.Id + 1}}</mat-cell>
-  </ng-container>
-  
-  <!-- NumberOfCompanions -->
-  <ng-container matColumnDef="numberOfCompanions">
-      <mat-header-cell *matHeaderCellDef>Number Of Companions</mat-header-cell>
-      <mat-cell *matCellDef="let mission">{{mission.NumberOfCompanions}}</mat-cell>
-    </ng-container>
-  
-    <!-- NumberOfFailsToFailMission -->
-  <ng-container matColumnDef="numberOfFailsToFailMission">
-    <mat-header-cell *matHeaderCellDef> Number of Failed Cards To Fail Mission </mat-header-cell>
-    <mat-cell *matCellDef="let mission">{{mission.NumberOfFailsToFailMission}}</mat-cell>
-  </ng-container>
-
-  <!-- IsSuccess -->
-  <ng-container matColumnDef="missionSuccess">
-      <mat-header-cell *matHeaderCellDef>Mission Success </mat-header-cell>
-      <mat-cell *matCellDef="let mission"> 
-        <mat-checkbox [(ngModel)]="mission.IsSuccess" disabled="disabled"></mat-checkbox> 
-    </mat-cell>
-  </ng-container>
-  
-  <mat-header-row *matHeaderRowDef="missionDisplayedColumns"></mat-header-row>
-  <mat-row [ngClass]="{'highlight': (currentMission + 1) == row.Id}" *matRowDef="let row; columns: missionDisplayedColumns;"></mat-row>
-  </mat-table>
-
-<!-- tabelka jak w waiting-room -->
-<!-- Korona - lider , aktywne checkboxy kto idzie na misje, button do zatwierdzenia, pozostali gracze głosują Sukces/Porażka (zaznaczony checkbox jak już po głosowaniu) -->
-<!-- Mapka gry ? punkty 1,2,3,4,5 które misje się powiodły a które nie, głosowania udane lub nie -->
-<div *ngIf="!playerVoted()">
-  <p>You haven't voted yet !!</p>
-  <button  mat-button (click)="openCompanionVoteDialog()">Vote For Team</button>
-</div>
-<button *ngIf="IsVoteButtonActive()" mat-button class="mat-primary" (click)="confirmTeam()">Vote</button>
-<p>Your character : {{characterCard.Name}}</p>
-<div>
-  <img [src] = "getImageUrl() | safe">
-</div>
-<p>Alignment : {{characterCard.Alignment}}</p>
-<p>Description : {{characterCard.Description}}</p>
-<p>Additional Info : {{characterCard.AdditionalInfo}}</p>
-<p> {{gameLog}} </p>
+<mat-list class="buttonList">
+    <mat-list-item *ngIf="!playerVoted()">
+        <button mat-raised-button class="mat-primary" mat-button (click)="openCompanionVoteDialog()">Vote For Team</button>
+    </mat-list-item>
+    <mat-list-item *ngIf="!playerSelectedMissionResult()">
+      <button mat-raised-button class="mat-primary" mat-button (click)="openMissionVoteDialog()">Pick Mission Result</button>
+    </mat-list-item>
+    <mat-list-item *ngIf="IsVoteButtonActive()">
+        <button mat-raised-button class="mat-primary" (click)="confirmTeam()">Vote</button>
+    </mat-list-item>
+    <mat-list-item>
+        <button  mat-raised-button class="mat-primary" (click)="openViewMissionsDialog()">View Levels</button>
+    </mat-list-item>
+    <mat-list-item>
+        <button  mat-raised-button class="mat-primary" (click)="openViewCharacterDialog()">View Character</button>
+    </mat-list-item>
+  </mat-list>

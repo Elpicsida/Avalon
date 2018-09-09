@@ -43,20 +43,20 @@ io.on('connection', (socket) => {
         console.log('user disconnected');
 
         if (socket.roomName) {
-            console.log('do something with room');
-            playerInRoomsChanged(socket.roomName);
+            let roomName = socket.roomName;
+            let userName = socket.userName;
+            socket.leave(socket.roomName);
+            let data = { type: 'leaveRoom', userName: userName };
+            io.sockets.in(roomName).emit('leaveRoom', data)
+            delete socket.roomName;
+            socket.Ready = false;
         }
     });
 
     socket.on('availableRooms', function() {
-        let rooms= [];
-        console.log('sending available rooms');
-        for(var roomName in io.sockets.adapter.rooms) {
-            if (roomName.indexOf(roomPrefix) > -1) {
-                rooms.push(roomName);
-            }
-        }
-        socket.emit('availableRooms', rooms);
+        let rooms = getAvailableRooms();
+        let data = { type: 'availableRooms', rooms: rooms };
+        socket.emit('availableRooms', data);
     });
 
     // When we receive a 'message' event from our client, print out
@@ -76,7 +76,21 @@ io.on('connection', (socket) => {
         socket.roomName = roomNameWithPrefix;
         let foundRoom = io.sockets.adapter.rooms[roomNameWithPrefix];
         foundRoom.GameOptions = roomParsed;
-        io.sockets.in(roomNameWithPrefix).emit('New user connected to room');
+        
+        let outputData = { type: 'availableRooms', rooms: getAvailableRooms()};
+
+        let sockets = io.sockets.sockets;
+        let socketIds = Object.keys(sockets);
+        let socketsWithoutRoom =[];
+        for (let i = 0 ; i < socketIds.length; i++) {
+            let csocket = sockets[socketIds[i]];
+            if (!csocket.roomName) {
+                socketsWithoutRoom.push(csocket);
+            }
+        }
+        for(let i = 0; i < socketsWithoutRoom.length; i++) {
+            io.to(socketsWithoutRoom[i].id).emit('availableRooms', outputData);
+        }
     });
 
     socket.on('setUserName', (userName) => {
@@ -90,11 +104,27 @@ io.on('connection', (socket) => {
         let foundRoom = io.sockets.adapter.rooms[roomNameWithPrefix];
     });
 
+    socket.on('leaveRoom', (data) => {
+        let roomName = socket.roomName;
+        let userName = socket.userName;
+        socket.leave(roomName, function(error) {
+            let outputData = { type: 'leaveRoom', userName: userName };
+            io.sockets.in(roomName).emit('leaveRoom', outputData);
+            console.log(error);
+        });
+        delete socket.roomName;
+        socket.Ready = false;
+    });
+
     socket.on('gameStart', (data) => {
         let room = socket.roomName;
-        io.sockets.in(room).emit('gameStart', '');
-            
-        setTimeout(function() { sendCharacterCardsToSockets(room); }, 2000);
+        let outputData = { type: 'gameStart'};
+        io.sockets.in(room).emit('gameStart', outputData);
+    });
+
+    socket.on('requestNewCharacters', (data) => {
+        let room = socket.roomName;
+        sendCharacterCardsToSockets(room)
     });
 
     socket.on('playerUpdate', (data) => {
@@ -105,29 +135,35 @@ io.on('connection', (socket) => {
         
         if (foundSocket) {
             foundSocket.Ready = player.Ready;
-            let updatedPlayers = [];
-            for(let i = 0 ; i < sockets.length; i ++ ) {
-                updatedPlayers.push(
-                {
-                    Name : sockets[i].userName,
-                    Ready : sockets[i].Ready
-                });
+            let readyPlayer = { 
+                Name: foundSocket.userName, 
+                Ready: foundSocket.Ready,
             }
+            // let updatedPlayers = [];
+            // for(let i = 0 ; i < sockets.length; i ++ ) {
+            //     updatedPlayers.push(
+            //     {
+            //         Name : sockets[i].userName,
+            //         Ready : sockets[i].Ready
+            //     });
+            // }
 
             let room = io.sockets.adapter.rooms[roomWithPrefix];
             if (room) {
                 let socketsLimit = room.GameOptions.playersLimit;
                 let maxLimitOfPlayers = room.GameOptions.NumberOfGood + room.GameOptions.NumberOfEvil + room.GameOptions.SpecialCharacters.length;
-                let data = { players: updatedPlayers, availablePlayers: sockets.length, maxLimit: maxLimitOfPlayers};
+                let data = { type:'playerUpdate', updatedPlayer: readyPlayer, availablePlayers: sockets.length, maxLimit: maxLimitOfPlayers};
                 io.sockets.in(roomWithPrefix).emit('playersInRoom', data);
             }
+
+
         }
     });
 
     socket.on('playersInRoom', (room) => {
         
         let roomNameWithPrefix = roomPrefix + JSON.parse(room);
-        playerInRoomsChanged(roomNameWithPrefix);
+        playerInRoomsChanged(socket, roomNameWithPrefix);
     });
 
     socket.on('initGame', (room) => {
@@ -234,12 +270,13 @@ io.on('connection', (socket) => {
                 mission.VotingFailed ++;
 
                 if (mission.VotingFailed === 5) {
-                    outputData = { type: 'endGame', evilWin: true};
+                    room.GameOptions.GoodWin = 0;
+                    outputData = { type: 'endGame'};
                     io.sockets.in(socket.roomName).emit('endGame', outputData);
                 }
                 mission.Votes = [];
                 mission.SuccessFailureVote = [];
-                outputData = { type : 'resetMission', players: campaign.Players, mission : mission };
+                outputData = { type: 'resetMission', players: campaign.Players, mission: mission };
                 io.sockets.in(socket.roomName).emit('resetMission', outputData);
             }
         }
@@ -285,7 +322,8 @@ io.on('connection', (socket) => {
             if (endGame) {
                 console.log('Ending Game');
                 let evilWin = campaign.Missions.filter(x => x.Success).length < campaign.Missions.filter(x => !x.Success.length);
-                outputData = { type: 'endGame', evilWin : evilWin}
+                room.GameOptions.GoodWin = !evilWin;
+                outputData = { type: 'endGame'};
                 io.sockets.in(socket.roomName).emit('endGame', outputData);
             }
             else {
@@ -330,22 +368,61 @@ io.on('connection', (socket) => {
 
         socket.emit('checkForNameUnique', {type : 'checkForNameUnique', value: isUserNameUnique});
     });
+
+    socket.on('getDataForEnding', (data) => {
+        let room = io.sockets.adapter.rooms[socket.roomName];
+        if (room) {
+            let sockets = getUsersInRoom(socket.roomName);
+            let winningTeam = '';
+            let players = [];
+            if (room.GameOptions.GoodWin) {
+                winningTeam = 'Good';
+                players = sockets.filter(x => x.Character.Alignment == 'Good');
+            }
+            else {
+                winningTeam = 'Evil';
+                players = sockets.filter(x => x.Character.Alignment == 'Evil');
+            }
+            let outputPlayers = [];
+            for(let i = 0 ; i < players.length; i ++ ) {
+                outputPlayers.push(
+                {
+                    Name: players[i].userName,
+                    CharacterName: players[i].Character.Name 
+                });
+            }
+
+            outputData = { type: 'getDataForEnding', team: winningTeam, players: outputPlayers };
+            socket.emit('getDataForEnding', outputData);
+            setTimeout(
+                () => {
+                    socket.leave(socket.roomName, function(error) {
+                        console.log(error);
+                    });
+                },
+                2000
+            )
+            
+        }
+    });
 }); 
 
 sendCharacterCardsToSockets = function(room) {
     let sockets = getUsersInRoom(room);
     let foundRoom = io.sockets.adapter.rooms[room];
-    Game.attachCharactersToSockets(foundRoom.GameOptions, sockets);
-    Game.addSpecialAbilitiesToCharacters(sockets);
-    
-    for(let i = 0 ; i < sockets.length; i++ ) {
-        let data = { type: 'sendingCharacterCard', characterCard: sockets[i].Character}
-        io.to(sockets[i].id).emit('sendingCharacterCard', data);
+    if (foundRoom) {
+        Game.attachCharactersToSockets(foundRoom.GameOptions, sockets);
+        Game.addSpecialAbilitiesToCharacters(sockets);
+        
+        for(let i = 0 ; i < sockets.length; i++ ) {
+            let data = { type: 'sendingCharacterCard', characterCard: sockets[i].Character}
+            io.to(sockets[i].id).emit('sendingCharacterCard', data);
+        }
     }
 }
 
 // Initialize our websocket server on port 5000
-http.listen(5000, '192.168.1.46', () => {
+http.listen(5000, 'localhost', () => {
     console.log('started on port 5000');
 });
 
@@ -360,10 +437,11 @@ getUsersInRoom = function(roomId) {
     return outputlist; 
 }
 
-playerInRoomsChanged = function(room) {
+playerInRoomsChanged = function(socket, room) {
     let sockets = getUsersInRoom(room);
+    let connectingUser = socket.userName;
     let updatedPlayers = [];
-
+    let otherSockets = sockets.filter(x => x.userName !== connectingUser);
     for(let i = 0 ; i < sockets.length; i ++ ) {
         updatedPlayers.push(
         {
@@ -373,10 +451,15 @@ playerInRoomsChanged = function(room) {
     }
 
     let roomOptions = io.sockets.adapter.rooms[room];
-    if (roomOptions) {
+    if (roomOptions && roomOptions.GameOptions) {
         let maxLimitOfPlayers = roomOptions.GameOptions.NumberOfGood + roomOptions.GameOptions.NumberOfEvil + roomOptions.GameOptions.SpecialCharacters.length;
-        let data = { players: updatedPlayers, availablePlayers: sockets.length, maxLimit: maxLimitOfPlayers};
-        io.sockets.in(room).emit('playersInRoom', data);
+        let data = { type: 'playersInRoom', players: updatedPlayers, availablePlayers: sockets.length, maxLimit: maxLimitOfPlayers};
+        socket.emit('playersInRoom', data);
+    }
+
+    for (let i = 0 ; i < otherSockets.length; i ++) {
+        let data = { type: 'playerJoined', userName: connectingUser };
+        otherSockets[i].emit('playerJoined', data);
     }
 }
 
@@ -417,4 +500,14 @@ getSocketByUserName = function(userName) {
             return client;
         }
     }
+}
+
+getAvailableRooms = function() {
+    let rooms= [];
+    for(var roomName in io.sockets.adapter.rooms) {
+        if (roomName.indexOf(roomPrefix) > -1) {
+            rooms.push(roomName);
+        }
+    }
+    return rooms;
 }

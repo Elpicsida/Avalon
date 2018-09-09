@@ -14,8 +14,8 @@ import { MatSnackBar, MatDialog } from '@angular/material';
 export class AbstractComponent implements OnInit, OnDestroy {
 
   protected subscription: ISubscription;
-
   constructor(protected chat: ChatService, protected router: Router, protected snackBar: MatSnackBar, public dialog: MatDialog) { }
+
 
   ngOnInit() {
   }

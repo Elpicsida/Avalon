@@ -1,6 +1,7 @@
 <p>
-  Waiting Room: {{this.roomName}} ({{availablePlayers}}/{{maxLimit}})
+    The {{winningTeam}} have won!
 </p>
+<p>Winners:</p>
 <mat-table [dataSource]="players" class="mat-elevation-z8" style="width:400px; margin:auto">
     
   <!--- Note that these columns can be defined in any order.
@@ -18,28 +19,17 @@
     <mat-cell *matCellDef="let player"> {{player.Name}} </mat-cell>
   </ng-container>
 
-  <!-- Ready -->
-  <ng-container matColumnDef="ready">
-      <mat-header-cell *matHeaderCellDef> Is Ready? </mat-header-cell>
-      <mat-cell *matCellDef="let player"> 
-        <mat-checkbox [(ngModel)]="player.Ready" disabled="disabled">
-      </mat-checkbox> 
-    </mat-cell>
-    </ng-container>
+  <!-- Character Name Column -->
+  <ng-container matColumnDef="characterName">
+    <mat-header-cell *matHeaderCellDef> Character </mat-header-cell>
+    <mat-cell *matCellDef="let player"> {{player.CharacterName}} </mat-cell>
+  </ng-container>
 
   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
   <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
 </mat-table>
-
-<div>
-  <p>Ready ?</p> 
-  <mat-checkbox [(ngModel)]="ready" (change)="readyClicked($event)"></mat-checkbox>
-</div>
-
-<div style="margin-top: 20px;">
-  <button mat-raised-button class="mat-primary" (click)="requestStartGame()" [disabled]="!isStartActive()">Start Game</button>
-</div>
-
-<div style="margin-top: 20px;">
-  <button mat-raised-button (click)="goBack()" >Back</button>
-</div>
+<mat-list>
+    <mat-list-item align="center">
+        <button style="margin:auto" mat-raised-button class="mat-primary" (click)="goToRoomSelection()">Go To Room Selection</button>
+    </mat-list-item>
+</mat-list>

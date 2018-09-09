@@ -23,8 +23,9 @@ export class SelectRoomComponent extends AbstractComponent {
   ngOnInit() {
     this.subscription = this.chat.messages.subscribe(msg => {
       console.log('SelectRoomComponent: ' + msg);
-      this.availableRooms = msg.map(x => x.substring('ROOM_'.length)),
-      (error) => console.log(error);
+      if (msg.type === 'availableRooms') {
+        this.availableRooms = msg.rooms.map(x => x.substring('ROOM_'.length));
+      }
     });
     this.chat.sendRequestForRooms();
   }

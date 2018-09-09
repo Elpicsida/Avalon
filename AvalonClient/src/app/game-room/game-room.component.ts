@@ -11,6 +11,8 @@ import { MissionVoteDialog } from '../mission-vote-dialog/mission-vote-dialog.co
 import { Mission } from '../Models/Mission';
 import { CompanionVoteDialog } from '../companion-vote.dialog/companion-vote-dialog.component';
 import { AbstractComponent } from '../abstract-component/abstract-component';
+import { ViewCharacterDialog } from '../view-character-dialog/view-character-dialog.component';
+import { ViewMissionsDialog } from '../view-missions-dialog/view-missions-dialog.component';
 
 @Component({
   selector: 'app-game-room',
@@ -20,7 +22,6 @@ import { AbstractComponent } from '../abstract-component/abstract-component';
 export class GameRoomComponent extends AbstractComponent {
 
   displayedColumns: string[] = ['id', 'name', 'leader', 'onMission', 'vote', 'voteValue'];
-  missionDisplayedColumns: string[] = ['id', 'numberOfCompanions', 'numberOfFailsToFailMission', 'missionSuccess'];
   characterCard: CharacterCard = new CharacterCard();
   missions: Mission[] = [];
   players: Player[] = [];
@@ -29,7 +30,6 @@ export class GameRoomComponent extends AbstractComponent {
   votingActive: boolean;
   afterSelectingCompanions: boolean;
   allPlayersVoted: boolean = false;
-  gameLog = ' GAME LOGGER '; 
   currentMission: number;
   roomName: string;
 
@@ -54,7 +54,8 @@ export class GameRoomComponent extends AbstractComponent {
               IsLeader: players[i].IsLeader,
               Ready : false,
               Room: '',
-              hasVoted: false
+              hasVoted: false,
+              hasSelectedMissionResult: false
             }
           );
         }
@@ -63,7 +64,8 @@ export class GameRoomComponent extends AbstractComponent {
         const isOnMission = msg.onMission;
 
         this.players.find(x => x.Name === user).IsGoingOnAMission = isOnMission;
-        this.openSnackBar('Someone is going on a mission', 'OK');
+        const snackBarMessage = isOnMission ? ' has been added to the team.' : ' has been removed from the team.';
+        this.openSnackBar(user + snackBarMessage, 'OK');
       } else if (msg.type === 'startVoting') {
         this.openCompanionVoteDialog();
         this.afterSelectingCompanions = true;
@@ -79,7 +81,6 @@ export class GameRoomComponent extends AbstractComponent {
       } else if (msg.type === 'voteMission') {
         this.openMissionVoteDialog();
       } else if (msg.type === 'resetMission') {
-        this.gameLog = 'Team didn\'t have enough votes';
         this.players = [];
         this.selectedPlayers = [];
         this.mission = msg.mission;
@@ -92,18 +93,15 @@ export class GameRoomComponent extends AbstractComponent {
               IsLeader: players[i].IsLeader,
               Ready : false,
               Room: '',
-              hasVoted: false
+              hasVoted: false,
+              hasSelectedMissionResult: false
             }
           );
         }
         this.afterSelectingCompanions = false;
         this.allPlayersVoted = false;
       } else if (msg.type === 'endGame') {
-        if (msg.evilWin) {
-          this.gameLog = 'EVIL WON';
-        } else {
-          this.gameLog = 'GOOD WON';
-        }
+        this.router.navigate(['ending']);
       } else if (msg.type === 'missionVotesResult') {
         this.missions[this.currentMission].IsSuccess = msg.IsMissionASuccess;
         this.currentMission++;
@@ -119,7 +117,8 @@ export class GameRoomComponent extends AbstractComponent {
               IsLeader: players[i].IsLeader,
               Ready : false,
               Room: '',
-              hasVoted: false
+              hasVoted: false,
+              hasSelectedMissionResult: false
             }
           );
         }
@@ -134,12 +133,8 @@ export class GameRoomComponent extends AbstractComponent {
     }), (error) => console.log('Error' + error);
 
     this.chat.initGame();
+    this.chat.sendRequestForNewCharacters();
   }
-
-  getImageUrl() {
-    return 'http://localhost:5000' + this.characterCard.ImageUrl;
-  }
-
   readyClicked($event, playerName: string): void {
     const isPlayerOnMission = $event.checked;
     let playerId = this.selectedPlayers.indexOf(playerName);
@@ -164,7 +159,7 @@ export class GameRoomComponent extends AbstractComponent {
     return false;
   }
 
-  IsVoteButtonActive() : boolean {
+  IsVoteButtonActive(): boolean {
     if (!this.afterSelectingCompanions) {
       if (this.mission) {
         return this.selectedPlayers.length === this.mission.NumberOfCompanions;
@@ -196,7 +191,18 @@ export class GameRoomComponent extends AbstractComponent {
       console.log('The dialog was closed');
       if (result != null) {
         console.log('sending to service' + result);
+        const player = this.players.find(x => x.Name === this.chat.getUserName());
+        player.hasVoted = true;
         this.chat.voteForMission(result);
+      }
+    });
+  }
+
+  openViewCharacterDialog(): void {
+    const dialogRef = this.dialog.open(ViewCharacterDialog, {
+      width: '300px',
+      data: {
+        characterCard : this.characterCard
       }
     });
   }
@@ -216,10 +222,32 @@ export class GameRoomComponent extends AbstractComponent {
     });
   }
 
+  openViewMissionsDialog(): void {
+    const dialogRef = this.dialog.open(ViewMissionsDialog, {
+      width: '440px',
+      data: {
+        missions: this.missions,
+        currentMission: this.currentMission
+      }
+    });
+  }
+
   playerVoted() : boolean {
     if (this.afterSelectingCompanions) {
       if (this.players && this.players.length) {
         return this.players.find(x => x.Name === this.chat.getUserName()).hasVoted;
+      }
+    }
+    return true;
+  }
+
+  playerSelectedMissionResult(): boolean {
+    if (this.afterSelectingCompanions && this.allPlayersVoted) {
+      if (this.players && this.players.length) {
+        let user = this.players.find(x => x.Name === this.chat.getUserName());
+        if (user.IsGoingOnAMission) {
+          return user.hasSelectedMissionResult;
+        }
       }
     }
 

@@ -48,7 +48,7 @@ export class WebsocketService {
         });
 
         this.socket.on(MessageType.AVAILABLE_ROOMS, (data) => {
-          console.log('Receiving rooms');
+          console.log('RECEIVE! rooms');
           observer.next(data);
         });
 
@@ -63,7 +63,7 @@ export class WebsocketService {
         });
 
         this.socket.on(MessageType.GAME_START, (data) => {
-          observer.next(MessageType.GAME_START);
+          observer.next(data);
         });
 
         this.socket.on(MessageType.SENDING_CHARACTER_CARD, (data) => {
@@ -72,6 +72,10 @@ export class WebsocketService {
         });
 
         this.socket.on(MessageType.INIT_GAME, (data) => {
+          observer.next(data);
+        });
+
+        this.socket.on(MessageType.LEAVE_ROOM, (data) => {
           observer.next(data);
         });
 
@@ -108,6 +112,7 @@ export class WebsocketService {
         });
 
         this.socket.on(MessageType.MISSION_VOTES_RESULT, (data) => {
+          console.log('receiving mission Results');
           observer.next(data);
         });
 
@@ -119,6 +124,14 @@ export class WebsocketService {
           observer.next(data);
         });
 
+        this.socket.on(MessageType.PLAYER_JOINED, (data) => {
+          observer.next(data);
+        });
+
+        this.socket.on(MessageType.GET_DATA_FOR_ENDING, (data) => {
+          observer.next(data);
+        });
+
         return () => {
 
         };
@@ -126,8 +139,6 @@ export class WebsocketService {
 
     const observer = {
         next: (data: SocketMessage) => {
-          console.log('socket used');
-          console.log(this.socket);
           if (data) {
             switch (data.MessageType) {
               case MessageType.CREATE_ROOM: {
@@ -148,6 +159,11 @@ export class WebsocketService {
               }
               case MessageType.JOIN_ROOM: {
                 this.socket.emit(MessageType.JOIN_ROOM, JSON.stringify(data.Content));
+                break;
+              }
+              case MessageType.LEAVE_ROOM: {
+                console.log('somebody leaving room !');
+                this.socket.emit(MessageType.LEAVE_ROOM, JSON.stringify(data.Content));
                 break;
               }
               case MessageType.SET_USERNAME: {
@@ -207,6 +223,16 @@ export class WebsocketService {
 
               case MessageType.CHECK_FOR_ROOM_NAME_UNIQUE: {
                 this.socket.emit(MessageType.CHECK_FOR_ROOM_NAME_UNIQUE, JSON.stringify(data.Content));
+                break;
+              }
+
+              case MessageType.REQUEST_NEW_CHARACTERS: {
+                this.socket.emit(MessageType.REQUEST_NEW_CHARACTERS, JSON.stringify(data.Content));
+                break;
+              }
+
+              case MessageType.GET_DATA_FOR_ENDING: {
+                this.socket.emit(MessageType.GET_DATA_FOR_ENDING, JSON.stringify(data.Content));
                 break;
               }
             }

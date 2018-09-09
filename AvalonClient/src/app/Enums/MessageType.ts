@@ -20,6 +20,8 @@ export enum MessageType {
     MISSION_VOTES_RESULT = 'missionVotesResult',
     END_GAME = 'endGame',
     CHECK_FOR_NAME_UNIQUE = 'checkForNameUnique',
-    CHECK_FOR_ROOM_NAME_UNIQUE = 'checkForRoomNameUnique'
-
+    CHECK_FOR_ROOM_NAME_UNIQUE = 'checkForRoomNameUnique',
+    PLAYER_JOINED = 'playerJoined',
+    REQUEST_NEW_CHARACTERS = "requestNewCharacters",
+    GET_DATA_FOR_ENDING= "getDataForEnding"
 }
