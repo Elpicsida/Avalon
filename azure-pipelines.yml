@@ -13,13 +13,21 @@ steps:
   inputs:
     versionSpec: '10.x'
   displayName: 'Install Node.js'
- 
-- script: |
-    npm install
-    npm run build
-    npm install -g nodemon
-  displayName: 'npm install and build for Avalon Server'
-  workingDirectory: Avalon
+  
+- task: PublishBuildArtifacts@1
+  name: PublishArtifacts
+  inputs:
+    PathtoPublish: $(Build.ArtifactStagingDirectory)
+    TargetPath: AvalonClient/dist
+    ArtifactName: PublishArtifacts
+    publishLocation: FilePath
+
+#- script: |
+#    npm install
+#    npm run build
+#    npm install -g nodemon
+#  displayName: 'npm install and build for Avalon Server'
+#  workingDirectory: Avalon
 - script: |
     npm install
     npm run build
