@@ -16,7 +16,9 @@ steps:
   
 - task: PublishBuildArtifacts@1
   inputs:
-    publishLocation: FilePath
+    PathtoPublish: AvalonClient/dist
+    ArtifactName: PublishTest
+    publishLocation: Container
     TargetPath: AvalonClient/dist
 
 #- script: |
