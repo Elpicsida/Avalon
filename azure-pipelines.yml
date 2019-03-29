@@ -14,12 +14,7 @@ steps:
     versionSpec: '10.x'
   displayName: 'Install Node.js'
   
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: $(build.artifactstagingdirectory)
-    ArtifactName: PublishTest
-    publishLocation: Container
-    TargetPath: AvalonClient/dist
+
 
 #- script: |
 #    npm install
@@ -32,3 +27,9 @@ steps:
     npm run build
   displayName: 'npm install and build for Avalon Client'
   workingDirectory: AvalonClient
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: $(build.artifactstagingdirectory)
+    ArtifactName: PublishTest
+    publishLocation: Container
+    TargetPath: AvalonClient/dist
