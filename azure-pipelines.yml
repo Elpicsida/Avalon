@@ -16,8 +16,8 @@ steps:
   
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: $(Build.ArtifactStagingDirectory)
     publishLocation: FilePath
+    TargetPath: AvalonClient/dist
 
 #- script: |
 #    npm install
