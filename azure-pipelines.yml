@@ -29,7 +29,7 @@ steps:
   workingDirectory: AvalonClient
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: $(build.artifactstagingdirectory)
+    PathtoPublish: AvalonClient/dist
     ArtifactName: PublishTest
     publishLocation: Container
     TargetPath: AvalonClient/dist
