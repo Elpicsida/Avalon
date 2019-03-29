@@ -15,11 +15,8 @@ steps:
   displayName: 'Install Node.js'
   
 - task: PublishBuildArtifacts@1
-  name: PublishArtifacts
   inputs:
     PathtoPublish: $(Build.ArtifactStagingDirectory)
-    TargetPath: AvalonClient/dist
-    ArtifactName: PublishArtifacts
     publishLocation: FilePath
 
 #- script: |
