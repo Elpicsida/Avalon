@@ -16,7 +16,7 @@ steps:
   
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: ClientDist
+    PathtoPublish: $(build.artifactstagingdirectory)
     ArtifactName: PublishTest
     publishLocation: Container
     TargetPath: AvalonClient/dist
