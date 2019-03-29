@@ -11,7 +11,7 @@ import { Campaign } from '../Models/Campaign';
 import { Mission } from '../Models/Mission';
 import { AbstractComponent } from '../abstract-component/abstract-component';
 import { MatSnackBar, MatDialog } from '@angular/material';
-error?
+
 @Component({
   selector: 'app-create-room',
   templateUrl: './create-room.component.html',
