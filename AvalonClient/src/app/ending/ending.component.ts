@@ -1,10 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { ChatService } from '../chat.service';
-import { MessageType } from '../Enums/MessageType';
 import { AbstractComponent } from '../abstract-component/abstract-component';
 import { MatSnackBar, MatDialog } from '@angular/material';
-import { Player } from '../Models/Player';
 
 @Component({
   selector: 'ending',

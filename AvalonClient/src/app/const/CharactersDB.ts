@@ -1,6 +1,7 @@
 import { CharacterCard } from '../Models/CharacterCard';
 import { AlignmentType } from '../Enums/AlignmentType';
 import { CharacterType } from '../Enums/CharacterType';
+
 export const CharactersDB: Array<CharacterCard> = new Array<CharacterCard>({
         // EVIL Characters :
         Id : 1,

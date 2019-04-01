@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { EndingComponent } from './ending.component';
 
 describe('WelcomeComponent', () => {
