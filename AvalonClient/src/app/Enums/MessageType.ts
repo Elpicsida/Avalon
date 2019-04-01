@@ -23,5 +23,5 @@ export enum MessageType {
     CHECK_FOR_ROOM_NAME_UNIQUE = 'checkForRoomNameUnique',
     PLAYER_JOINED = 'playerJoined',
     REQUEST_NEW_CHARACTERS = "requestNewCharacters",
-    GET_DATA_FOR_ENDING= "getDataForEnding"
+    GET_DATA_FOR_ENDING = "getDataForEnding"
 }
