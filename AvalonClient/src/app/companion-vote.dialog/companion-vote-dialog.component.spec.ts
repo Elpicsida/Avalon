@@ -1,5 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { CompanionVoteDialog } from './companion-vote-dialog.component';
 
 describe('CompanionVoteDialog', () => {
