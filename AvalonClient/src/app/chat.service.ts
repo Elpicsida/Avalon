@@ -149,7 +149,7 @@ export class ChatService {
     socketMessage.MessageType = MessageType.CHECK_FOR_NAME_UNIQUE;
     socketMessage.Content = { userName: userName };
     this.messages.next(socketMessage);
-  } 
+  }
 
   checkRoomName(roomName: string) {
     const socketMessage = new SocketMessage();

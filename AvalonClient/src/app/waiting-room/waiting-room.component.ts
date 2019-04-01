@@ -41,8 +41,7 @@ export class WaitingRoomComponent extends AbstractComponent {
         player.Ready = msg.updatedPlayer.Ready;
         let readiness = player.Ready ? ' is ready' : ' is not ready';
         this.openSnackBar('User ' + msg.updatedPlayer.Name + readiness, 'OK');
-      }
-      else if (msg.type === MessageType.PLAYERS_IN_ROOM) {
+      } else if (msg.type === MessageType.PLAYERS_IN_ROOM) {
         this.players = [];
         this.maxLimit = msg.maxLimit;
         this.availablePlayers = msg.availablePlayers;
@@ -51,8 +50,7 @@ export class WaitingRoomComponent extends AbstractComponent {
           this.players.push(new Player(characters[i].Name, characters[i].Ready));
 
         }
-      }
-      else if (msg.type === MessageType.PLAYER_JOINED) {
+      } else if (msg.type === MessageType.PLAYER_JOINED) {
         this.players.push(new Player(msg.userName, false));
         let tempPlayers = this.players;
         this.players = [];
@@ -61,11 +59,10 @@ export class WaitingRoomComponent extends AbstractComponent {
         }
         this.availablePlayers = this.players.length;
         this.openSnackBar('User ' + msg.userName + ' has joined', 'OK');
-      }
-      else if (msg.type === MessageType.LEAVE_ROOM) {
-        let playerId = this.players.findIndex(x => x.Name === msg.userName);
+      } else if (msg.type === MessageType.LEAVE_ROOM) {
+        const playerId = this.players.findIndex(x => x.Name === msg.userName);
         this.players.splice(playerId, 1);
-        let tempPlayers = this.players;
+        const tempPlayers = this.players;
         this.players = [];
         for (let i = 0 ; i < tempPlayers.length; i++) {
           this.players.push(new Player(tempPlayers[i].Name, tempPlayers[i].Ready));

@@ -40,8 +40,7 @@ export class CreateRoomComponent extends AbstractComponent {
             this.room.NumberOfPlayers = 1;
             this.chat.createNewRoom(this.room);
             this.router.navigate(['waitingRoom']);
-          }
-          else {
+          } else {
             this.openSnackBar('Room Name already taken','OK');
           }
         }
